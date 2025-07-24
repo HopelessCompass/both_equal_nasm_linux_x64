@@ -1,7 +1,7 @@
 global _start
 
 section .rodata
-    a: db 1
+    a: db 0
     b: db 1
     
     true: db "True", 10
@@ -18,26 +18,35 @@ section .text
     
     cmp dh, 1
     je continue
-    mov rax, 1
-    mov rdi, 1
+    call set_syswrite_registers
     mov rsi, false
     mov rdx, false_len
-    syscall
-    call exit
+    call finish
     
     continue:
     cmp [a], dl
-    je is_true
+    jne is_false
+    call is_true
     
-    is_true:
+    set_syswrite_registers:
     mov rax, 1
     mov rdi, 1
+    ret
+    
+    is_true:
+    call set_syswrite_registers
     mov rsi, true
     mov rdx, true_len
-    syscall
-    call exit
+    call finish
     
-    exit:
+    is_false:
+    call set_syswrite_registers
+    mov rsi, false
+    mov rdx, false_len
+    call finish
+    
+    finish:
+    syscall
     mov rax, 60
     mov rdi, 0
     syscall
