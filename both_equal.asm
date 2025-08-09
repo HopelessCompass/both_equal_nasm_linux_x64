@@ -11,42 +11,46 @@ section .rodata
     
 section .text
 
-    _start:
+set_syswrite_registers:
+    mov rax, 1
+    mov rdi, 1
+    ret
+    
+print_true:
+    call set_syswrite_registers
+    mov rsi, true
+    mov rdx, true_len
+    syscall
+    ret 
+    
+print_false:
+    call set_syswrite_registers
+    mov rsi, false
+    mov rdx, false_len
+    syscall
+    ret
+    
+_start:
     
     mov dh, [a]
     mov dl, [b]
     
     cmp dh, 1
-    je continue
-    call set_syswrite_registers
-    mov rsi, false
-    mov rdx, false_len
-    call finish
-    
-    continue:
+    jne l2
+   
     cmp [a], dl
-    jne is_false
-    call is_true
+    je l1
+    jmp l2
     
-    set_syswrite_registers:
-    mov rax, 1
-    mov rdi, 1
-    ret
+l1:    
+    call print_true
+    jmp exit
     
-    is_true:
-    call set_syswrite_registers
-    mov rsi, true
-    mov rdx, true_len
-    call finish
+l2:
+    call print_false 
+    jmp exit
     
-    is_false:
-    call set_syswrite_registers
-    mov rsi, false
-    mov rdx, false_len
-    call finish
-    
-    finish:
-    syscall
+exit:    
     mov rax, 60
     mov rdi, 0
     syscall
