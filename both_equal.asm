@@ -1,7 +1,7 @@
 global _start
 
 section .rodata
-    a: db 0
+    a: db 1
     b: db 1
     
     true: db "True", 10
@@ -32,13 +32,13 @@ print_false:
     
 _start:
     
-    mov dh, [a]
-    mov dl, [b]
+    movzx rbx, byte [a]
+    movzx rcx, byte [b]
     
-    cmp dh, 1
+    cmp rbx, 1
     jne l2
    
-    cmp [a], dl
+    cmp rbx, rcx
     je l1
     jmp l2
     
